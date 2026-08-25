@@ -1,0 +1,5 @@
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+lua/adam/autocmds_copy_backup.lua
