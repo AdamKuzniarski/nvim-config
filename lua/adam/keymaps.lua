@@ -11,6 +11,15 @@ map("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 map("n", "<leader>cc", "gcc", { remap = true, desc = "Toggle comment line" })
 map("x", "<leader>cc", "gc", { remap = true, desc = "Toggle selected comments" })
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+	callback = function(event)
+		map("n", "<leader>cl", function()
+			require("adam.console_log").insert()
+		end, { buffer = event.buf, desc = "Log value under cursor" })
+	end,
+})
+
 -- Diagnostics
 map("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 
