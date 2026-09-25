@@ -65,24 +65,31 @@ return {
   },
 
   {
-    "norcalli/nvim-colorizer.lua",
+    "catgoose/nvim-colorizer.lua",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("colorizer").setup({
-        "css",
-        "scss",
-        "html",
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact",
-      }, {
-        RGB = true,
-        RRGGBB = true,
-        RRGGBBAA = true,
-        css = true,
-        css_fn = true,
-        mode = "background",
+        filetypes = {
+          "css",
+          "scss",
+          "html",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+        },
+        options = {
+          parsers = {
+            css = true,
+            css_fn = true,
+            hex = {
+              rgb = true,
+              rrggbb = true,
+              rrggbbaa = true,
+            },
+          },
+          display = { mode = "background" },
+        },
       })
     end,
   },

@@ -7,6 +7,10 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
 map("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 map("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 
+-- Commenting (Neovim's built-in gcc/gc mappings)
+map("n", "<leader>cc", "gcc", { remap = true, desc = "Toggle comment line" })
+map("x", "<leader>cc", "gc", { remap = true, desc = "Toggle selected comments" })
+
 -- Diagnostics
 map("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 
@@ -42,3 +46,8 @@ map("n", "<leader>sw", "zw", { desc = "Mark word as wrong" })
 
 map("n", "]s", "]s", { desc = "Next spelling error" })
 map("n", "[s", "[s", { desc = "Previous spelling error" })
+
+-- Terminal
+map("n", "<leader>tt", "<cmd>botright 15split | terminal<CR>", { desc = "Open terminal below" })
+
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Leave terminal mode" })
