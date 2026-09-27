@@ -16,7 +16,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function(event)
 		map("n", "<leader>cl", function()
 			require("adam.console_log").insert()
-		end, { buffer = event.buf, desc = "Log value under cursor" })
+		end, { buffer = event.buf, desc = "Log typed variable with matching label" })
 	end,
 })
 

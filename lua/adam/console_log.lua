@@ -1,27 +1,14 @@
 local M = {}
+local live_updates_enabled = false
 
-local function is_path(text)
-	if not text or not text:match("^[%a_$][%w_$.]*$") or text:sub(-1) == "." then
-		return false
-	end
-
-	for part in text:gmatch("[^.]+") do
-		if not part:match("^[%a_$][%w_$]*$") then
-			return false
-		end
-	end
-
-	return not text:find("..", 1, true)
-end
-
-local function expression_at_cursor(bufnr, row, col)
+local function in_jsx_at_cursor(bufnr, row, col)
 	local ok, parser = pcall(vim.treesitter.get_parser, bufnr)
 	if not ok then
-		return nil, nil
+		return nil
 	end
 
 	if not pcall(parser.parse, parser) then
-		return nil, nil
+		return nil
 	end
 
 	local node_ok, node = pcall(vim.treesitter.get_node, {
@@ -29,33 +16,24 @@ local function expression_at_cursor(bufnr, row, col)
 		pos = { row - 1, col },
 	})
 	if not node_ok then
-		return nil, nil
+		return nil
 	end
 
-	local expression
-	local in_jsx = false
 	while node do
-		local kind = node:type()
-		if kind:match("^jsx_") then
-			in_jsx = true
-		end
-		if kind == "identifier" or kind == "member_expression" or kind == "this" then
-			local text = vim.treesitter.get_node_text(node, bufnr)
-			if is_path(text) then
-				expression = text
-			end
+		if node:type():match("^jsx_") then
+			return true
 		end
 		node = node:parent()
 	end
 
-	return expression, in_jsx
+	return false
 end
 
 function M.insert()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	local line = vim.api.nvim_get_current_line()
-	local expression, in_jsx = expression_at_cursor(bufnr, row, col)
+	local in_jsx = in_jsx_at_cursor(bufnr, row, col)
 
 	if in_jsx then
 		vim.notify("Cannot insert console.log inside JSX markup", vim.log.levels.WARN)
@@ -66,10 +44,34 @@ function M.insert()
 		return
 	end
 
+	require("lazy").load({ plugins = { "LuaSnip" } })
+	local ls = require("luasnip")
+	if not live_updates_enabled then
+		ls.setup({ update_events = { "TextChanged", "TextChangedI" } })
+		live_updates_enabled = true
+	end
+
 	local indent = line:match("^[ \t]*")
-	local log = expression and string.format('console.log("%s:", %s);', expression, expression) or "console.log();"
-	vim.api.nvim_buf_set_lines(bufnr, row, row, false, { indent .. log })
-	vim.api.nvim_win_set_cursor(0, { row + 1, #indent + (expression and 0 or #"console.log(") })
+	vim.api.nvim_buf_set_lines(bufnr, row, row, false, { indent })
+	ls.snip_expand(
+		ls.snippet("", {
+			ls.text_node('console.log("'),
+			ls.function_node(function(args)
+				return args[1][1]
+			end, { 1 }),
+			ls.text_node('", '),
+			ls.insert_node(1),
+			ls.text_node(");"),
+		}),
+		{ pos = { row, #indent } }
+	)
+
+	local winid = vim.api.nvim_get_current_win()
+	vim.schedule(function()
+		if vim.api.nvim_get_current_win() == winid and vim.api.nvim_get_current_buf() == bufnr then
+			vim.cmd.startinsert()
+		end
+	end)
 end
 
 return M
