@@ -128,10 +128,35 @@ function M.setup(ls)
 		})
 	end
 
+	local function gui_slider()
+		return s({
+			trig = "guislider",
+			name = "lil-gui slider",
+			dscr = "Numeric controller with range, step, and label; import GUI separately",
+		}, {
+			i(1, "gui"),
+			t({ "", "  .add(" }),
+			i(2, "floor.material"),
+			t(', "'),
+			i(3, "displacementBias"),
+			t({ '")', "  .min(" }),
+			i(4, "-1"),
+			t({ ")", "  .max(" }),
+			i(5, "1"),
+			t({ ")", "  .step(" }),
+			i(6, "0.001"),
+			t({ ")", '  .name("' }),
+			i(7, "floor displacementBias"),
+			t('");'),
+			i(0),
+		})
+	end
+
 	for _, ft in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact" }) do
 		local snippets = { three_mesh(), three_loop(), three_orbit(), three_resize() }
 		if ft == "javascript" or ft == "typescript" then
 			table.insert(snippets, three_start())
+			table.insert(snippets, gui_slider())
 		end
 		if ft == "javascriptreact" or ft == "typescriptreact" then
 			table.insert(snippets, r3f_mesh())

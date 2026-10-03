@@ -34,6 +34,9 @@ Type a trigger in Insert mode, select it with `<C-n>` and `<Enter>`, then move b
 | `threeloop` | JavaScript/TypeScript, including JSX/TSX | Render loop for an existing scene |
 | `threeorbit` | JavaScript/TypeScript, including JSX/TSX | Orbit controls for an existing camera and renderer |
 | `threeresize` | JavaScript/TypeScript, including JSX/TSX | Resize handler for an existing renderer and perspective camera |
+| `guislider` | JavaScript/TypeScript | lil-gui slider for a numeric property, with editable object, property, range, step, and label |
 | `r3fmesh` | JSX/TSX | React Three Fiber mesh |
 
 `threestart` already includes a render loop and resize handling, so it does not need `threeloop` or `threeresize`. It requires the `three` package and a browser entry point. For `threeorbit`, add `import { OrbitControls } from "three/addons/controls/OrbitControls.js";` yourself.
+
+`guislider` expands to the full `gui.add(...).min(...).max(...).step(...).name(...)` chain using `floor.material` and `displacementBias` as example values. Use `<Tab>` to replace each field, including the visible label. Create `gui` and import `GUI` from `lil-gui` in your project yourself.
